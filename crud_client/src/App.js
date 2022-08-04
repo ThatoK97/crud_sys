@@ -26,116 +26,169 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Stack,
+  Text,
   Button,
   Image,
-  useDisclosure
+  useDisclosure,
+  HStack
 } from "@chakra-ui/react";
 import "./App.css";
+import TodoInput from "./components/TodoInput";
+import TodoItem from "./components/TodoItem";
 
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [todo, setTodo] = useState({});
+  const [todoItems, setTodoItems] = useState(
+    [{todo: 'Mow the lawn',
+    complete: false},
+    {todo: 'Do Laundry',
+    complete: false},
+    {todo: 'Make Dinner',
+    complete: false}]
+    );
 
-  const [users, setUsers] = useState([]);
-  const [photos, setPhotos] = useState([]);
-  const [query, setQuery] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  
-  const inputHandler = e => setQuery(e.target.value);
-  
-  useEffect(() => {
-    const fetchUserData = () => {
-      fetch(`http://localhost:3001?q=${query}`)
-        .then(res => res.json())
-        .then(users => updateUsers(users))
-        .catch(error => console.log(error.message))
-      }
-      if (query.length >= 0) fetchUserData();
-    }, [query]);
-  
-  const updateUsers = users => setUsers(users);
-  const updatePhotos = photos => setPhotos(photos);
-  useEffect(() => {
-    const fetchPhotos = () => {
-      fetch("http://localhost:3001/photos/")
-        .then(resp => resp.json())
-        .then(photos => updatePhotos(photos))
+  const createTodoItem = (todo) => {
+    const newTodoItems = [...todoItems, { todo, complete: false }];
+    setTodoItems(newTodoItems);
+  };
+
+  const deleteTodoItem = (index) => {
+    const newTodoItems = [...todoItems];
+    newTodoItems.splice(index, 1);
+    setTodoItems(newTodoItems);
+  };
+
+  const completeTodoItem = (index) => {
+    const newTodoItems = [...todoItems];
+
+    newTodoItems[index].complete === false 
+    ? (newTodoItems[index].complete = true)
+    : (newTodoItems[index].complete = false);
+
+    setTodoItems(newTodoItems)
+  };
+
+  const updateTodoItem = (index) => {
+    const newTodoItems = [...todoItems];
+    const item = newTodoItems[index];
+    let newItem = prompt(`Update ${item.todo}?`, item.todo);
+    let todoObj = { todo: newItem, complete: false };
+    newTodoItems.splice(index, 1, todoObj);
+    if (newItem === null || newItem === "") {
+    return;
+    } else {
+    item.todo = newItem;
     }
-    fetchPhotos();
-  }, []);
+    setTodoItems(newTodoItems);
+  };
 
-  useEffect(() => {
-    const fetchTodos = () => {
-      fetch("http://localhost:3001/todos/")
-        .then(resp => resp.json())
-        .then(todos => updateTodos(todos))
-    }
-    fetchTodos();
-  }, []);
 
-  const updateTodos = todos => setTodos(todos);
+
+
+
+
+
+  // const [todos, setTodos] = useState([]);
+  // const [todo, setTodo] = useState({});
+
+  // const [users, setUsers] = useState([]);
+  // const [photos, setPhotos] = useState([]);
+  // const [query, setQuery] = useState("");
+  // const { isOpen, onOpen, onClose } = useDisclosure()
+  
+  // const inputHandler = e => setQuery(e.target.value);
+  
+  // useEffect(() => {
+  //   const fetchUserData = () => {
+  //     fetch(`http://localhost:3001?q=${query}`)
+  //       .then(res => res.json())
+  //       .then(users => updateUsers(users))
+  //       .catch(error => console.log(error.message))
+  //     }
+  //     if (query.length >= 0) fetchUserData();
+  //   }, [query]);
+
+  //   useEffect(() => {
+  //     const fetchTodos = () => {
+  //       fetch("http://localhost:3001/todos")
+  //         .then(resp => resp.json())
+  //         .then(todos => updateTodos(todos))
+  //     }
+  //     fetchTodos();
+  //   }, []);
+
+  //   useEffect(() => {
+  //     const fetchPhotos = () => {
+  //       fetch("http://localhost:3001/photos/")
+  //         .then(resp => resp.json())
+  //         .then(photos => updatePhotos(photos))
+  //     }
+  //     fetchPhotos();
+  //   }, []);
+
+  // const updateUsers = users => setUsers(users);
+  // const updatePhotos = photos => setPhotos(photos);
+
+  // const updateTodos = todos => setTodos(todos);
 
   // handle input changes on currentTodo
-  const handleChange = e => setTodo({
-    ...todo,
-    [e.currentTarget.value]: e.currentTarget.value
-  })
-  // handle submit
-  const handleSubmit = async e => {
-    e.preventDefault();
+  // const handleChange = e => setTodo({
+  //   ...todo,
+  //   [e.currentTarget.value]: e.currentTarget.value
+  // });
+  // // handle submit
+  // const handleSubmit = async e => {
+  //   e.preventDefault();
+  //   try {
+  //     const { data } = await addTodo(todo);
+  //     const items = todos.push(data);
+  //     setTodos(...items);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+  // // handle todo update
+  // const handleUpdate = async todo => {
+  //   try {
+  //     const data = todos.find(item => item.id === todo.id);
+  //     const items = data.completed === true ? data : await updateTodo(data, {
+  //       ...data,
+  //       completed: !data.completed
+  //     });
+  //     setTodos(items);
+  //   } catch (error) {
+  //     console.log(error);
 
-    try {
-      const { data } = await addTodo(todo);
-      const items = todos.push(data);
-      setTodos(...items);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  // handle todo update
-  const handleUpdate = async todo => {
-    try {
-      const data = todos.find(item => item.id === todo.id);
-      const items = data.completed === true ? data : await updateTodo(data, {
-        ...data,
-        completed: !data.completed
-      });
-      setTodos(items);
-    } catch (error) {
-      console.log(error);
+  //   }
+  // }
+  // // handle todo deletions
+  // const handleDelete = async todo => {
+  //   try {
+  //     const itemToDelete = todos.filter(item => todo.id === item.id);
+  //     setTodos(...todos);
+  //     await deleteTodo(itemToDelete);
+  //   } catch (error) {
+  //     setTodos(...todos);
+  //     console.error(error);
+  //   }
+  // } 
 
-    }
-  }
-  // handle todo deletions
-  const handleDelete = async todo => {
-    try {
-      const itemToDelete = todos.filter(item => todo.id === item.id);
-      setTodos(...todos);
-      await deleteTodo(itemToDelete);
-    } catch (error) {
-      setTodos(...todos);
-      console.error(error);
-    }
-  } 
+  // useEffect(() => {
+  //   const fetchTodos = async () => {
+  //     try {
+  //       const { data } = await getTodos();
+  //       setTodos(data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const { data } = await getTodos();
-        setTodos(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    fetchTodos();
-  }, []);
+  //   fetchTodos();
+  // }, []);
 
   return (
     <div className="App">
-        <Box>
+        {/* <Box>
         <Flex
           minWidth="max-content"
           alignItems="center"
@@ -168,100 +221,60 @@ function App() {
             {users
               .filter(user => user?.name.toLowerCase().includes(query))
               .map(item => {
-                return <Td key={item.id}>{item.name}</Td>
+                return <Td key={item.id} onClick={onOpen}>{item.name}</Td>
               })}
             </Tr>
           </Tbody>
           <Thead>
             <Tr>
-              <Th>Photos</Th>
+              <Th>Surname</Th>
             </Tr>
           </Thead>
           <Tbody>
             <Tr>
             {users
-              .map(u => (<Td onClick={onOpen} key={u.id}>Open {u.username} photo</Td>))}
+              .filter(user => user?.username.toLowerCase().includes(query))
+              .map(item => {
+                return <Td key={item.id} onClick={onOpen}>{item.username}</Td>
+              })}
             </Tr>
           </Tbody>
         </Table>
       </TableContainer>
     
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal size="sm" isOpen={isOpen} onClose={onClose} >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>PHOTOS</ModalHeader>
+          <ModalHeader>CONTACTS</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Box>
-              <Stack spacing={6}>
-              {photos.map(photo => (
-                <Box boxSize='sm'>
-                <Image key={photo.id} src={photo.url} boxSize="100px" alt={photo.thumbnail} borderRadius="full" />
-              </Box>
-              )).slice(0, 5)}
-              </Stack>
+              {users.map(u => (<Text>{u.email}, {u.phone} | {u.website}</Text>))}
             </Box>
           </ModalBody>
-    
           <ModalFooter>
             <Button colorScheme='blue' mr={3} onClick={onClose}>
-              Delete
+              Close
             </Button>
             <Button variant='ghost'>Edit</Button>
             <Button variant='ghost'>Undo</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {''}
+      {''} */}
     
       <Container maxW='md' bg='gray' centerContent>
-          <FormControl onSubmit={handleSubmit}>
-            <FormLabel>TO DO</FormLabel>
-            <Input
-            variant="outlined"
-            size="sm"
-            value={todo.title}
-            required={true}
-            onChange={handleChange}
-            placeholder="Add New TODO"
-            />
-            <Button
-            color="teal"
-            variant="outlined"
-            type="submit"
-            >
-              Add Todo
-            </Button>
-            <FormHelperText>Type your to do here...</FormHelperText>
-          </FormControl>
-
-              {todos.map((todo) => (
-                  <Container
-                      key={todo.id}
-                      className="flex task_container"
-                  >
-                      <Checkbox
-                          checked={todo.completed}
-                          onClick={() => handleUpdate(todo)}
-                          color="primary"
-                      />
-                      <Box
-                          className={
-                              todo.completed
-                                  ? "todo line_through"
-                                  : "todo"
-                          }
-                      >
-                          {todo.title}
-                      </Box>
-                      <Button
-                          onClick={() => handleDelete(todo)}
-                          color="gray.400"
-                        >
-                          delete
-                      </Button>
-                  </Container>
-              ))}
+        <TodoInput createTodoItem={createTodoItem} />
+        {todoItems.map((item, index) => (
+          <TodoItem
+          key={index}
+          index={index} 
+          item={item} 
+          deleteTodoItem={deleteTodoItem}
+          completeTodo={completeTodoItem}
+          updateTodo={updateTodoItem}
+          />
+        ))}
       </Container>
 </div>
   );
