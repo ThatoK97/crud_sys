@@ -17,5 +17,7 @@
 ## Remember to install both React library as well using - *npx install create-react-app app-name* 
 ## then jump into your subdirectory: **cd app-name** and run **npm start**
 
+## Run **npm start** on crud_client and separately on crud_sys dir
+
 *Still faced challenges with the proxy server. Tried **http-proxy-middleware** and manually injecting the proxy*
 *but it only reads data and not accept incoming requests*
