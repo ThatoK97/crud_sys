@@ -4,7 +4,14 @@ const router = express.Router();
 router.post("/todos", async (req, res) => {
     try {
         const { todos } = req.body;
-        res.send(todos);
+        const { userId, id, title, completed } = todos;
+        if (title === "") res.status(400).send("Todo requires title string");
+        res.send({ 
+            userId: userId,
+            id: id,
+            title: title,
+            completed: completed
+         });
     } catch (error) {
         res.send(error);
     }

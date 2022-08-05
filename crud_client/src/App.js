@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { getTodos, addTodo, updateTodo, deleteTodo } from "./services";
 import {
   FormControl,
@@ -30,18 +30,28 @@ import {
 import "./App.css";
 import TodoItem from "./components/TodoItem";
 
+// initialise todo data to update in useReducer()
+const initialData = {
+  userId: Math.round(Math.random() * 10),
+  id: Math.round(Math.random() * 10),
+  title: "",
+  completed: false
+};
+
+// define reducer function
+const reducer = (todo, { field, value }) => {
+  return {
+    ...todo,
+    [field]: value
+  };
+};
+
 function App() {
   // set state variables 
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
   const [todoItems, setTodoItems] = useState([]);
-  const [todo, setTodo] = useState({
-    userId: Math.round(Math.random() * 10),
-    id: Math.round(Math.random() * 10),
-    title: "",
-    completed: false
-  });
-
+  const [todo, dispatchTodo] = useReducer(reducer, initialData);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const inputHandler = e => setQuery(e.target.value);
@@ -77,15 +87,17 @@ function App() {
       completed: false
     }) => {
     const newTodoItems = [...todoItems, todo];
-    setTodoItems(newTodoItems);
+    setTodoItems([...newTodoItems]);
     return newTodoItems;
   };
 
   // handle input changes on currentTodo
-  const handleInput = e => setTodo({
-    ...todo.title,
-    [e.target.name]: e.currentTarget.value
-  });
+  const handleInput = e => {
+    dispatchTodo({ field: e.target.name, value: e.target.value })
+  }
+
+  // destructure value of todo title
+  const { title } = todo;
 
   // handle submit form
   const handleSubmit = async (e) => {
@@ -93,15 +105,16 @@ function App() {
     const initialTodos = todoItems;
     try {
       const [ newTodo ] = createTodoItem(todo);
+      console.log(newTodo)
       const data = await (await addTodo(newTodo)).json();
       const todos = initialTodos;
       const loadedTodo = todos.unshift(data);
-      setTodo({
+      dispatchTodo({
         ...todo,
         title: "",
         completed: false
       });
-      setTodoItems(loadedTodo);
+      setTodoItems([loadedTodo]);
     } catch (error) {
       console.error(error);
     }
@@ -113,7 +126,7 @@ function App() {
     try {
       const noDelete = initialTodos.filter(t => todo.id !== t.id);
       const toDelete = initialTodos.find(d => todo.id === d.id );
-      setTodoItems(noDelete);
+      setTodoItems([...noDelete]);
       await (await deleteTodo(toDelete)).json();
     } catch (error) {
       setTodoItems(initialTodos);
@@ -129,7 +142,6 @@ function App() {
     ? completedOrNot.completed === true
     : completedOrNot.completed === false
     setTodoItems(newTodoItems);
-
     return complete;
   };
 
@@ -141,8 +153,7 @@ function App() {
         ...data,
         completed: !data.completed
       })).json();
-      console.log(items)
-      setTodoItems(items);
+      setTodoItems([...items]);
     } catch (error) {
       console.log(error);
     };
@@ -216,12 +227,13 @@ function App() {
       </Modal>
       
       <Box maxW="lg" borderWidth="2px" borderRadius="lg" m={5} p={8} overflow="hidden">
-        <FormControl p={4} m={3} onSubmit={() => handleSubmit}>
+        <FormControl p={4} m={3} >
           <FormLabel>TODO LIST</FormLabel>
           <Input
           type="text"
           placeholder="create todo"
-          value={todo.title}
+          name="title"
+          value={title}
           onChange={handleInput}
           />
                 
@@ -229,10 +241,9 @@ function App() {
           <FormHelperText>This form allows you to add, update and delete your todo list</FormHelperText>
         </FormControl>
         
-        {todoItems
-        && todoItems.slice(0, 9).map((todo) => {
+        {todoItems.slice(0, 9).map((todo, index) => {
           return (<TodoItem
-          key={todo.id}
+          key={index}
           todo={todo}
           deleteTodoItem={deleteTodoItem}
           completeTodoItem={completeTodoItem}
