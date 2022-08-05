@@ -1,4 +1,4 @@
-# CRUD_SYS is a simple todo app with a mix of photo viewing
+# CRUD_SYS is a simple todo app
 
 ### Do the following to use the application in your local machine:
 **Use these to install the dependencies:**
