@@ -38,20 +38,12 @@ function getTodos(req, res) {
         .catch(error => console.error(error.message))
 }
 
-// fetch photos
-function getPhotos(req, res) {
-    fetch("https://jsonplaceholder.typicode.com/photos")
-        .then(data => data.json())
-        .then(photo => res.send(photo))
-        .catch(error => console.log(error))
-}
 // server todos 
 app.use("/todos/", todos);
 
 // "GET" routes to the server
-app.get("/", fetchUsers);
+app.get("/users/", fetchUsers);
 app.get("/todos/", getTodos);
-app.get("/photos/", getPhotos);
 
 // listen on port
 app.listen(port);

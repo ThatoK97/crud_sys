@@ -1,15 +1,23 @@
-const TodoItem = ({item, index, deleteTodoItem, completeTodoItem, updateTodoItem}) => {
+import { Button, Flex, List, ListItem, ListIcon, HStack, Text } from "@chakra-ui/react";
+import { MdSettings } from "react-icons/md";
+
+const TodoItem = ({todo, deleteTodoItem, completeTodoItem, updateTodoItem}) => {
     return (
-        <div className="todo-list">
-            <li style={{textDecoration: item.complete ? "line-through" : ""}}>
-                {item.todo}
-            </li>
-            <div className="btns">
-                <button onClick={() => completeTodoItem(index)}>Complete</button>
-                <button onClick={() => updateTodoItem(index)}>Update</button>
-                <button onClick={() => deleteTodoItem(index)}>Delete</button>
-            </div>
-        </div>
+        <Flex wrap="wrap">
+            <List>
+                <ListItem>
+                    <ListIcon as={MdSettings} color='green.500' /> 
+                    {todo.completed === true 
+                    ? <Text as="s">{ todo.title }</Text> 
+                    : <Text>{ todo.title }</Text>}
+                </ListItem>
+            </List>
+            <HStack spacing={3}>
+                <Button variant="outline" colorScheme="teal" size="sm" onClick={() => completeTodoItem(todo)}>Complete</Button>
+                <Button variant="outline" colorScheme="teal" size="sm" onClick={() => updateTodoItem(todo)}>Update</Button>
+                <Button variant="outline" colorScheme="teal" size="sm" onClick={() => deleteTodoItem(todo)}>Delete</Button>
+            </HStack>
+        </Flex>
     )
     };
 

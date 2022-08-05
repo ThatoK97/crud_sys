@@ -1,38 +1,33 @@
-const apiUrl = "http://localhost:3001/todos/";
-
 // get and list all todos
 export function getTodos() {
-    return fetch(apiUrl);
+    return fetch("/todos")
 }
-
-// get specific todo
-// export function getTodo(todo) {
-//     return fetch(`apiUrl/${todo.id}`)
-// }
 
 // add todo 
 export function addTodo(todo) {
-    return fetch(apiUrl, {
+    return fetch("/todos", {
         method: 'POST',
-        body: JSON.stringify(todo),
         headers: {
             "Content-type": "application/json; charset=UTF-8"
-        }})
+        },
+        body: JSON.stringify(todo),
+    })
 }
 
-// update todos
+// update todo
 export function updateTodo(todo) {
-    return fetch(`apiUrl/${todo.id}`, {
+    return fetch(`/todos/${todo.id}`, {
         method: 'PUT',
-        body: JSON.stringify(todo),
         headers: {
             "Content-type": "application/json; charset=UTF-8"
-        }})
+        },
+        body: JSON.stringify(todo),
+    })
 }
 
 // remove or delete todo
 export function deleteTodo(todo) {
-    return fetch(`apiUrl/${todo.id}`, {
+    return fetch(`/todos/${todo.id}`, {
         method: 'DELETE'
     });
 }
