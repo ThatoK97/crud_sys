@@ -19,5 +19,3 @@
 
 ## Run *npm start* on crud_client and separately on crud_sys dir
 
-*Still faced challenges with the proxy server. Tried **http-proxy-middleware** and manually injecting the proxy*
-*but it only reads data and not accept incoming requests*

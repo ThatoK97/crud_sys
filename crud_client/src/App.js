@@ -79,22 +79,18 @@ function App() {
     if (query.length >= 0) fetchUserData();
   }, [query]);
 
-  const createTodoItem = (
-    todo = {
-      userId: Math.round(Math.random() * 10),
-      id: Math.round(Math.random() * 10),
-      title: "",
+  const createTodoItem = () => {
+    return {
+      ...todo,
+      title: title,
       completed: false
-    }) => {
-    const newTodoItems = [...todoItems, todo];
-    setTodoItems([...newTodoItems]);
-    return newTodoItems;
+    }
   };
 
   // handle input changes on currentTodo
   const handleInput = e => {
     dispatchTodo({ field: e.target.name, value: e.target.value })
-  }
+  };
 
   // destructure value of todo title
   const { title } = todo;
@@ -102,19 +98,12 @@ function App() {
   // handle submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const initialTodos = todoItems;
     try {
-      const [ newTodo ] = createTodoItem(todo);
-      console.log(newTodo)
-      const data = await (await addTodo(newTodo)).json();
-      const todos = initialTodos;
-      const loadedTodo = todos.unshift(data);
-      dispatchTodo({
-        ...todo,
-        title: "",
-        completed: false
-      });
-      setTodoItems([loadedTodo]);
+      const todoObj = createTodoItem();
+      await (await addTodo(todoObj)).json();
+      dispatchTodo(todoObj);
+      const newTodos = todoItems.unshift(todoObj);
+      setTodoItems([...newTodos]);
     } catch (error) {
       console.error(error);
     }
@@ -134,26 +123,21 @@ function App() {
     }
   };
 
-  const completeTodoItem = (todo) => {
-    const newTodoItems = todoItems;
-
-    const completedOrNot = newTodoItems.find(t => todo.id === t.id);
-    const complete = completedOrNot.completed === false
-    ? completedOrNot.completed === true
-    : completedOrNot.completed === false
-    setTodoItems(newTodoItems);
-    return complete;
-  };
+  // handle completed todos
+  const handleCompleted = todo => {
+    const tData = todoItems.find(item => item.id === todo.id);
+    const newData = tData.completed === true
+                    ? tData.completed === false
+                    : tData.completed === true;
+    dispatchTodo(newData);
+  }
 
   // handle update
   const updateTodoItem = async (todo) => {
     try {
       const data = todoItems.find(item => item.id === todo.id);
-      const items = data.completed === true ? data : await (await updateTodo(data, {
-        ...data,
-        completed: !data.completed
-      })).json();
-      setTodoItems([...items]);
+      await (await updateTodo(data)).json();
+      dispatchTodo(data);
     } catch (error) {
       console.log(error);
     };
@@ -245,8 +229,8 @@ function App() {
           return (<TodoItem
           key={index}
           todo={todo}
+          handleCompleted={handleCompleted}
           deleteTodoItem={deleteTodoItem}
-          completeTodoItem={completeTodoItem}
           updateTodoItem={updateTodoItem}
           />)
           })
